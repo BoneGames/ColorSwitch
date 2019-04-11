@@ -15,6 +15,7 @@ namespace ColorSwitch
         public UnityEvent onGameOver;
 
         private Color currentColor;
+        
 
         void Start()
         {
@@ -32,17 +33,21 @@ namespace ColorSwitch
 
         void OnTriggerEnter2D(Collider2D col)
         {
-            if (col.name == "ColorChanger")
+            string name = col.name;
+            switch (name)
             {
+                case "ColorChanger":
                 RandomizeColor();
                 Destroy(col.gameObject);
                 return;
-            }
 
-            if (col.name == "Star")
-            {
-                // Add score
+                case "Star":
+                GameManager.Instance.scoreAmount += 100;
                 Destroy(col.gameObject);
+                return;
+
+                case "OffScreen":
+                onGameOver.Invoke();
                 return;
             }
 
@@ -55,9 +60,17 @@ namespace ColorSwitch
             }
         }
 
+        
+
         void RandomizeColor()
         {
+            Color startCol = rend.color;
             int index = Random.Range(0, 4);
+            if(colors[index] == startCol)
+            {
+                RandomizeColor();
+                return;
+            }
             rend.color = colors[index];
         }
     }
